@@ -1,0 +1,43 @@
+Disk Monitor / 硬盘监控 —— 首次打开说明 / How to open the first time
+=====================================================================
+
+【中文】
+
+1. 把“DiskMonitor”拖到旁边的“Applications（应用程序）”文件夹。
+2. 第一次打开时，系统可能提示“无法验证开发者”或“Apple 无法检查其是否包含恶意软件”。
+   这是因为本应用没有经过 Apple 公证，并不代表应用有问题。放行方法：
+
+   macOS 15 及以上：
+     先双击打开一次 → 出现提示后点“完成” →
+     打开“系统设置 → 隐私与安全性”，在页面下方找到“DiskMonitor 已被阻止”，点“仍要打开”，
+     再输入开机密码确认。
+
+   macOS 10.15 – 14：
+     在“应用程序”文件夹里，按住 Control 键点按 DiskMonitor（或右键）→ 选“打开” → 再点“打开”。
+
+   如果提示“已损坏，无法打开”，在“终端”里运行下面这行命令后再打开：
+     xattr -dr com.apple.quarantine /Applications/DiskMonitor.app
+
+3. 打开后应用只出现在屏幕右上角的状态栏里，不会出现在程序坞（Dock）中。
+   点击状态栏图标即可查看详情、切换语言、设置开机自动启动。
+
+【English】
+
+1. Drag "DiskMonitor" into the "Applications" folder next to it.
+2. The app is not notarized by Apple, so macOS may block it the first time.
+   This does not mean anything is wrong with the app. To allow it:
+
+   macOS 15 or later:
+     Double-click the app once and click "Done" in the warning →
+     open System Settings → Privacy & Security, scroll down to
+     "DiskMonitor was blocked", click "Open Anyway" and confirm with your password.
+
+   macOS 10.15 – 14:
+     In the Applications folder, Control-click (or right-click) DiskMonitor →
+     choose "Open" → click "Open" again.
+
+   If macOS says the app "is damaged", run this in Terminal, then open it again:
+     xattr -dr com.apple.quarantine /Applications/DiskMonitor.app
+
+3. The app lives only in the menu bar (top-right of the screen), not in the Dock.
+   Click its menu bar icon for details, language, and launch-at-login settings.
