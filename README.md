@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="Assets/logo.png" width="128" alt="Disk Monitor icon">
+  <img src="Assets/logo.png" width="128" alt="Disk & Wi-Fi Monitor icon">
 </p>
 
-<h1 align="center">Disk Monitor · 硬盘监控</h1>
+<h1 align="center">Disk &amp; Wi-Fi Monitor · 硬盘和 Wi-Fi 监控</h1>
 
 <p align="center">
   在 macOS 状态栏实时显示硬盘的温度、读写速度、健康度、剩余空间，以及网络上行和下行速度。<br>
@@ -82,7 +82,7 @@
 
 ## English
 
-**Disk Monitor** is a lightweight macOS menu bar app that shows, for every internal and external disk:
+**Disk & Wi-Fi Monitor** is a lightweight macOS menu bar app that shows your network speed and, for every internal and external disk:
 
 - Temperature and live read/write speed right in the menu bar
 - Network upload ↑ / download ↓ speed in the menu bar, plus total traffic
