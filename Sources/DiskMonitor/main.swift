@@ -5,8 +5,14 @@ import AppKit
 // 给出图片路径时，额外导出状态栏图像（放大 4 倍、白底）用于检查排版
 if let dumpIndex = CommandLine.arguments.firstIndex(of: "--dump") {
     let a = DiskIO.snapshot()
+    let netA = NetIO.counters()
     Thread.sleep(forTimeInterval: 2)
     let b = DiskIO.snapshot()
+    let netB = NetIO.counters()
+    let netAll = NetIO.cumulative()
+    print(L("Network") + "  ↑ " + Fmt.speedLong(Double(NetIO.delta(netB.sent, netA.sent)) / 2)
+          + "  ↓ " + Fmt.speedLong(Double(NetIO.delta(netB.received, netA.received)) / 2)
+          + "  (" + LF("Total: %@ sent · %@ received", Fmt.size(Double(netAll.sent)), Fmt.size(Double(netAll.received))) + ")")
     let volumes = Volumes.byDisk()
     print("smartctl: \(Smart.path ?? "-")")
     for s in b {
@@ -26,7 +32,7 @@ if let dumpIndex = CommandLine.arguments.firstIndex(of: "--dump") {
             StatusImage.Block(label: Texts.label(isExternal: false, index: nil, short: true), temp: 38, read: 25.6e6, write: 2.4e6),
             StatusImage.Block(label: Texts.label(isExternal: true, index: nil, short: true), temp: 42, read: 22e3, write: 544e6),
         ]
-        let img = StatusImage.make(blocks)
+        let img = StatusImage.make(blocks, net: (up: 180e3, down: 12.5e6))
         let scale: CGFloat = 4
         let size = NSSize(width: img.size.width * scale, height: img.size.height * scale)
         let rep = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: Int(size.width), pixelsHigh: Int(size.height),

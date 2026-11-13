@@ -41,3 +41,7 @@
 "Couldn't complete the operation" = "操作失败";
 "Safe to disconnect" = "可以安全拔出";
 "%@ has been ejected." = "%@ 已推出。";
+"Network" = "网络";
+"Upload %@      Download %@" = "上传 %@      下载 %@";
+"Total: %@ sent · %@ received" = "累计：已上传 %@ · 已下载 %@";
+"Show network speed in menu bar" = "在状态栏显示网速";

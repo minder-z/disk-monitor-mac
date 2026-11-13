@@ -41,3 +41,7 @@
 "Couldn't complete the operation" = "操作を完了できませんでした";
 "Safe to disconnect" = "安全に取り外せます";
 "%@ has been ejected." = "%@ を取り出しました。";
+"Network" = "ネットワーク";
+"Upload %@      Download %@" = "アップロード %@      ダウンロード %@";
+"Total: %@ sent · %@ received" = "累計：送信 %@ · 受信 %@";
+"Show network speed in menu bar" = "メニューバーにネットワーク速度を表示";

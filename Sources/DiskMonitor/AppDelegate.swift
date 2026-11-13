@@ -25,6 +25,34 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, UNUser
     private let smartInterval: TimeInterval = 20
 
     private var volumes: [String: [VolumeInfo]] = [:]
+
+    // 网速
+    private var prevNet: (totals: NetIO.Totals, t: TimeInterval)?
+    private var netTotals = NetIO.Totals()
+    private var netUp = 0.0
+    private var netDown = 0.0
+    private var netRows: [InfoRowView] = []
+    private var netTotalsBusy = false
+    private var lastNetTotalsPoll: TimeInterval = 0
+
+    private func pollNetTotals() {
+        netTotalsBusy = true
+        lastNetTotalsPoll = ProcessInfo.processInfo.systemUptime
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            let totals = NetIO.cumulative()
+            DispatchQueue.main.async {
+                guard let self else { return }
+                self.netTotals = totals
+                self.netTotalsBusy = false
+                if self.menuIsOpen { for (v, r) in zip(self.netRows, self.networkRows()) { v.update(r) } }
+            }
+        }
+    }
+
+    private var showNetwork: Bool {
+        get { UserDefaults.standard.object(forKey: "showNetwork") as? Bool ?? true }
+        set { UserDefaults.standard.set(newValue, forKey: "showNetwork") }
+    }
     private var menuIsOpen = false
     private var liveItems: [String: [InfoRowView]] = [:]
 
@@ -88,6 +116,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, UNUser
             return DiskState(sample: s, readBps: r, writeBps: w)
         }
         prev = next
+
+        let net = NetIO.counters()
+        if let p = prevNet, now > p.t {
+            let dt = now - p.t
+            netUp = Double(NetIO.delta(net.sent, p.totals.sent)) / dt
+            netDown = Double(NetIO.delta(net.received, p.totals.received)) / dt
+        }
+        prevNet = (net, now)
+        // 菜单打开时每 5 秒在后台更新一次准确的累计流量
+        if menuIsOpen && !netTotalsBusy && now - lastNetTotalsPoll >= 5 { pollNetTotals() }
 
         // 插拔硬盘后 diskN 编号可能变化，清掉旧的对应关系
         let names = samples.map { $0.bsdName }
@@ -170,7 +208,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, UNUser
         guard let button = statusItem.button else { return }
         let hidden = hiddenKeys
         let shown = disks.filter { !hidden.contains($0.key) }
-        if shown.isEmpty {
+        if shown.isEmpty && !showNetwork {
             button.image = nil
             button.title = L("Disk")
             return
@@ -179,13 +217,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, UNUser
         button.image = StatusImage.make(shown.map { d in
             StatusImage.Block(label: label(d, short: true), temp: smart[d.sample.bsdName]?.temperature,
                               read: d.readBps, write: d.writeBps)
-        })
+        }, net: showNetwork ? (up: netUp, down: netDown) : nil)
     }
 
     // MARK: - 菜单
 
     func menuNeedsUpdate(_ menu: NSMenu) { buildMenu() }
-    func menuWillOpen(_ menu: NSMenu) { menuIsOpen = true }
+    func menuWillOpen(_ menu: NSMenu) {
+        menuIsOpen = true
+        if !netTotalsBusy { pollNetTotals() }
+    }
     func menuDidClose(_ menu: NSMenu) { menuIsOpen = false }
 
     // 自定义视图的左边距：标题和普通菜单项文字对齐，详细信息再缩进一级
@@ -246,6 +287,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, UNUser
             menu.addItem(.separator())
         }
 
+        // 网络
+        menu.addItem(infoItem(.text(L("Network")), leading: headerLeading, bold: true).0)
+        netRows = networkRows().map { row in
+            let (item, view) = infoItem(row, leading: detailLeading)
+            menu.addItem(item)
+            return view
+        }
+        let netToggle = NSMenuItem(title: L("Show network speed in menu bar"), action: #selector(toggleNetwork(_:)),
+                                   keyEquivalent: "")
+        netToggle.target = self
+        netToggle.state = showNetwork ? .on : .off
+        netToggle.indentationLevel = 1
+        menu.addItem(netToggle)
+        menu.addItem(.separator())
+
         if Smart.path == nil {
             menu.addItem(infoItem(.text(L("smartctl not found, temperature unavailable")), leading: headerLeading).0)
             menu.addItem(infoItem(.text(L("Install it with: brew install smartmontools")), leading: headerLeading).0)
@@ -288,7 +344,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, UNUser
         menu.addItem(NSMenuItem(title: L("Quit"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
     }
 
+    private func networkRows() -> [Row] {
+        [
+            .text(LF("Upload %@      Download %@", Fmt.speedLong(netUp), Fmt.speedLong(netDown))),
+            .text(LF("Total: %@ sent · %@ received",
+                     Fmt.size(Double(netTotals.sent)), Fmt.size(Double(netTotals.received)))),
+        ]
+    }
+
+    @objc private func toggleNetwork(_ sender: NSMenuItem) {
+        showNetwork.toggle()
+        render()
+    }
+
     private func refreshLiveItems() {
+        for (view, row) in zip(netRows, networkRows()) { view.update(row) }
         volumes = Volumes.byDisk()
         for d in disks {
             guard let views = liveItems[d.sample.bsdName] else { continue }

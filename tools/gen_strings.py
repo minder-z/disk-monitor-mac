@@ -267,6 +267,17 @@ T["es"] += [
 ]
 
 
+# ---- 1.4 新增：网速 ----
+KEYS += ["Network", "Upload %@      Download %@", "Total: %@ sent · %@ received", "Show network speed in menu bar"]
+T["zh-Hans"] += ["网络", "上传 %@      下载 %@", "累计：已上传 %@ · 已下载 %@", "在状态栏显示网速"]
+T["zh-Hant"] += ["網路", "上傳 %@      下載 %@", "累計：已上傳 %@ · 已下載 %@", "在選單列顯示網速"]
+T["ja"] += ["ネットワーク", "アップロード %@      ダウンロード %@", "累計：送信 %@ · 受信 %@", "メニューバーにネットワーク速度を表示"]
+T["ko"] += ["네트워크", "업로드 %@      다운로드 %@", "누적: 보냄 %@ · 받음 %@", "메뉴 막대에 네트워크 속도 표시"]
+T["de"] += ["Netzwerk", "Upload %@      Download %@", "Gesamt: %@ gesendet · %@ empfangen", "Netzwerkgeschwindigkeit in der Menüleiste anzeigen"]
+T["fr"] += ["Réseau", "Envoi %@      Réception %@", "Total : %@ envoyés · %@ reçus", "Afficher le débit réseau dans la barre des menus"]
+T["es"] += ["Red", "Subida %@      Bajada %@", "Total: %@ enviados · %@ recibidos", "Mostrar velocidad de red en la barra de menús"]
+
+
 def esc(s: str) -> str:
     return s.replace("\\", "\\\\").replace('"', '\\"')
 

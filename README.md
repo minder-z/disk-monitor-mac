@@ -5,8 +5,8 @@
 <h1 align="center">Disk Monitor · 硬盘监控</h1>
 
 <p align="center">
-  在 macOS 状态栏实时显示硬盘的温度、读写速度、健康度和剩余空间，内置和外置硬盘都支持。<br>
-  Real-time disk temperature, read/write speed, health and free space in your Mac menu bar.
+  在 macOS 状态栏实时显示硬盘的温度、读写速度、健康度、剩余空间，以及网络上行和下行速度。<br>
+  Real-time disk temperature, read/write speed, health, free space and network speed in your Mac menu bar.
 </p>
 
 <p align="center">
@@ -20,6 +20,7 @@
 ## 功能
 
 - **状态栏实时显示**：每块硬盘显示温度和每秒的读取、写入速度，可以单独隐藏某块盘
+- **网速**：状态栏显示实时上行 ↑ 和下行 ↓ 速度，菜单里显示累计流量，可以关闭
 - **详细信息菜单**：型号、温度、健康状态、寿命已用、累计写入、通电时长、非正常关机次数
 - **空间信息**：每个卷的已用、总容量和可用空间，配用量条（超过 80% 变橙色，超过 90% 变红色）
 - **外置硬盘**：一键推出、卸载、重新挂载；推出后会通知"可以安全拔出"
@@ -84,6 +85,7 @@
 **Disk Monitor** is a lightweight macOS menu bar app that shows, for every internal and external disk:
 
 - Temperature and live read/write speed right in the menu bar
+- Network upload ↑ / download ↓ speed in the menu bar, plus total traffic
 - Health (SMART), life used, total data written, power-on hours, unsafe shutdowns
 - Used / total / free space for each volume, with a usage bar
 - Eject, unmount and mount for external disks

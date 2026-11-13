@@ -41,3 +41,7 @@
 "Couldn't complete the operation" = "No se pudo completar la operación";
 "Safe to disconnect" = "Se puede desconectar con seguridad";
 "%@ has been ejected." = "%@ se ha expulsado.";
+"Network" = "Red";
+"Upload %@      Download %@" = "Subida %@      Bajada %@";
+"Total: %@ sent · %@ received" = "Total: %@ enviados · %@ recibidos";
+"Show network speed in menu bar" = "Mostrar velocidad de red en la barra de menús";

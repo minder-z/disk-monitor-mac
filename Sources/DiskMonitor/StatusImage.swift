@@ -24,7 +24,8 @@ enum Fmt {
     /// 容量（十进制，和 smartctl 一致）
     static func size(_ bytes: Double) -> String {
         if bytes >= 1e12 { return String(format: "%.2f TB", bytes / 1e12) }
-        if bytes >= 1e9 { return String(format: "%.0f GB", bytes / 1e9) }
+        if bytes >= 1e11 { return String(format: "%.0f GB", bytes / 1e9) }
+        if bytes >= 1e9 { return String(format: "%.1f GB", bytes / 1e9) }
         return String(format: "%.0f MB", bytes / 1e6)
     }
 }
@@ -38,7 +39,8 @@ enum StatusImage {
         let write: Double
     }
 
-    static func make(_ blocks: [Block]) -> NSImage {
+    /// net 为 nil 时不显示网速；网速块画在最右边：上行 ↑ 在上，下行 ↓ 在下
+    static func make(_ blocks: [Block], net: (up: Double, down: Double)? = nil) -> NSImage {
         let font = NSFont.monospacedDigitSystemFont(ofSize: 9, weight: .medium)
         let attrs: [NSAttributedString.Key: Any] = [.font: font, .foregroundColor: NSColor.black]
         func width(_ s: String) -> CGFloat { ceil((s as NSString).size(withAttributes: attrs).width) }
@@ -58,7 +60,13 @@ enum StatusImage {
             return Laid(top: top, bottom: b.label, leftW: max(width(top), width(b.label)),
                         read: Fmt.speedShort(b.read), write: Fmt.speedShort(b.write))
         }
-        let total = laid.reduce(0) { $0 + $1.leftW + innerGap + speedW } + blockGap * CGFloat(max(laid.count - 1, 0))
+        let upPrefix = "↑"
+        let downPrefix = "↓"
+        let netW = max(width(upPrefix), width(downPrefix)) + 2 + numberW
+        let blockCount = laid.count + (net == nil ? 0 : 1)
+        let total = laid.reduce(0) { $0 + $1.leftW + innerGap + speedW }
+            + (net == nil ? 0 : netW)
+            + blockGap * CGFloat(max(blockCount - 1, 0))
 
         let image = NSImage(size: NSSize(width: max(total, 1), height: height), flipped: false) { _ in
             let topY: CGFloat = 10.5
@@ -75,6 +83,15 @@ enum StatusImage {
                 (l.write as NSString).draw(at: NSPoint(x: right - width(l.write), y: topY), withAttributes: attrs)
                 (l.read as NSString).draw(at: NSPoint(x: right - width(l.read), y: bottomY), withAttributes: attrs)
                 x = right + blockGap
+            }
+            if let net {
+                let up = Fmt.speedShort(net.up)
+                let down = Fmt.speedShort(net.down)
+                (upPrefix as NSString).draw(at: NSPoint(x: x, y: topY), withAttributes: attrs)
+                (downPrefix as NSString).draw(at: NSPoint(x: x, y: bottomY), withAttributes: attrs)
+                let right = x + netW
+                (up as NSString).draw(at: NSPoint(x: right - width(up), y: topY), withAttributes: attrs)
+                (down as NSString).draw(at: NSPoint(x: right - width(down), y: bottomY), withAttributes: attrs)
             }
             return true
         }

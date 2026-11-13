@@ -41,3 +41,7 @@
 "Couldn't complete the operation" = "Couldn't complete the operation";
 "Safe to disconnect" = "Safe to disconnect";
 "%@ has been ejected." = "%@ has been ejected.";
+"Network" = "Network";
+"Upload %@      Download %@" = "Upload %@      Download %@";
+"Total: %@ sent · %@ received" = "Total: %@ sent · %@ received";
+"Show network speed in menu bar" = "Show network speed in menu bar";
